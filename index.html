@@ -168,7 +168,7 @@ footer .foot-brand svg{height:11px; width:auto; display:block}
 .sg-label .photo{width:40px; height:40px; border-radius:8px}
 
 /* 추천 — 블루 포인트 라인 */
-.suggest{position:relative; margin-top:12px; padding:20px 20px 18px 24px; background:var(--surface); border:1px solid var(--line);
+.suggest{position:relative; margin-top:16px; padding:20px 20px 18px 24px; background:var(--surface); border:1px solid var(--line);
   border-radius:16px; box-shadow:var(--shadow); overflow:hidden}
 .suggest[hidden]{display:none}
 .suggest::before{content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--point)}
@@ -348,12 +348,12 @@ button:focus-visible{outline:2px solid var(--focus); outline-offset:2px}
   <section id="result">
     <h2 class="step"><b>2</b>결과 확인</h2>
     <div class="verdict" id="verdict" aria-live="polite"></div>
-    <div class="suggest" id="suggest" hidden></div>
     <div class="cart-head" id="cartHead" hidden>
       <h3>담은 상품</h3>
       <button class="clear" id="clear" type="button">모두 비우기</button>
     </div>
     <ul class="cart" id="cart"></ul>
+    <div class="suggest" id="suggest" hidden></div>
   </section>
   </div>
 
