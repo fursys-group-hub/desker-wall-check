@@ -5,139 +5,282 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>데스커 벽고정 확인</title>
 <meta name="description" content="설치할 상품을 골라 담으면 벽고정 필수 여부를 바로 확인할 수 있어요.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
+/* DESKER 컬러 가이드
+   프라이머리: BLACK #282828 · DARK GRAY #515151 · LIGHT GRAY #B3B3B3 + 그레이스케일
+   세컨더리(포인트 라인·포인트 텍스트 10%): BLUE #336DFF · YELLOW #FFDC1E · GREEN #00B441
+   어텐션(주의 환기, 소량): ORANGE #FF5948 */
 :root{
-  --wall:#E9EBE6; --surface:#F8F9F6; --ink:#1D2422; --muted:#5E6763; --line:#CBD0C9;
-  --must:#B8321C; --must-bg:#F7DFD9; --rec:#875800; --rec-bg:#F6E8C6; --ok:#2F6247; --ok-bg:#DCEBE1;
-  --focus:#2C5E8A; --sel:#1D2422; --sel-ink:#F8F9F6;
+  --d-black:#282828; --d-blue:#336DFF; --d-yellow:#FFDC1E; --d-green:#00B441; --d-orange:#FF5948;
+  --wall:#F0F0F0; --surface:#FFFFFF; --sunk:#F0F0F0; --ink:#282828; --muted:#616161; --faint:#969696;
+  --line:#D6D6D6; --line-strong:#B3B3B3;
+  --point:var(--d-blue); --point-ink:#2457D6;
+  --must:var(--d-orange); --must-bg:rgba(255,89,72,.12);
+  --rec:var(--d-yellow); --rec-bg:rgba(255,220,30,.24);
+  --ok:var(--d-green); --ok-bg:rgba(0,180,65,.12);
+  --focus:var(--d-blue); --sel:#282828; --sel-ink:#FFFFFF;
+  --shadow:0 1px 2px rgba(40,40,40,.05), 0 6px 18px rgba(40,40,40,.05);
   color-scheme: light; box-sizing:border-box;
-  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --wall:#151918; --surface:#1E2321; --ink:#E7ECE9; --muted:#9BA4A0; --line:#353C39;
-    --must:#FF8D78; --must-bg:#3B1F19; --rec:#F0C162; --rec-bg:#352B14; --ok:#8FD2AD; --ok-bg:#173026;
-    --focus:#8DBDE6; --sel:#E7ECE9; --sel-ink:#151918; color-scheme: dark;
+    --wall:#282828; --surface:#353535; --sunk:#414141; --ink:#F0F0F0; --muted:#B3B3B3; --faint:#7E7E7E;
+    --line:#414141; --line-strong:#515151; --point-ink:#7FA3FF;
+    --must-bg:rgba(255,89,72,.18); --rec-bg:rgba(255,220,30,.16); --ok-bg:rgba(0,180,65,.18);
+    --focus:#7FA3FF; --sel:#F0F0F0; --sel-ink:#282828; --shadow:none; color-scheme: dark;
   }
 }
 :root[data-theme="dark"]{
-  --wall:#151918; --surface:#1E2321; --ink:#E7ECE9; --muted:#9BA4A0; --line:#353C39;
-  --must:#FF8D78; --must-bg:#3B1F19; --rec:#F0C162; --rec-bg:#352B14; --ok:#8FD2AD; --ok-bg:#173026;
-  --focus:#8DBDE6; --sel:#E7ECE9; --sel-ink:#151918; color-scheme: dark;
+  --wall:#282828; --surface:#353535; --sunk:#414141; --ink:#F0F0F0; --muted:#B3B3B3; --faint:#7E7E7E;
+  --line:#414141; --line-strong:#515151; --point-ink:#7FA3FF;
+  --must-bg:rgba(255,89,72,.18); --rec-bg:rgba(255,220,30,.16); --ok-bg:rgba(0,180,65,.18);
+  --focus:#7FA3FF; --sel:#F0F0F0; --sel-ink:#282828; --shadow:none; color-scheme: dark;
 }
 *,*::before,*::after{box-sizing:inherit}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html{scroll-padding-top:72px}
 body{margin:0; background:var(--wall); color:var(--ink);
-  font-family:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
-  font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased}
-.wrap{max-width:680px; margin:0 auto; padding:28px 20px 120px}
-header h1{font-size:1.75rem; line-height:1.25; margin:0 0 6px; font-weight:700; letter-spacing:-.01em}
-header p{margin:0; color:var(--muted); font-size:.9375rem}
+  /* 영문: Proxima Nova(설치된 경우) · 한글/기본: Pretendard */
+  font-family:"Proxima Nova","proxima-nova","Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  font-size:16px; line-height:1.6; letter-spacing:-.005em; -webkit-font-smoothing:antialiased; word-break:keep-all}
 
-.tabs{display:flex; gap:6px; margin:24px -20px 0; padding:0 20px 2px; overflow-x:auto; scrollbar-width:none}
+/* 상단 브랜드 바 — 맨 위 블루 그래픽 라인(포인트) */
+.topbar{position:sticky; top:0; z-index:30; background:color-mix(in srgb, var(--surface) 90%, transparent);
+  -webkit-backdrop-filter:saturate(1.4) blur(12px); backdrop-filter:saturate(1.4) blur(12px);
+  border-top:3px solid var(--point); border-bottom:1px solid var(--line); padding-top:env(safe-area-inset-top,0px)}
+.topbar-in{max-width:720px; margin:0 auto; height:54px; padding:0 20px; display:flex; align-items:center; gap:14px}
+.brand{display:flex; align-items:center; color:var(--ink)}
+.brand svg{height:15px; width:auto; display:block}
+.brand-sep{width:1px; height:16px; background:var(--line-strong)}
+.brand-sub{font-size:.875rem; font-weight:500; color:var(--muted)}
+.std{margin-left:auto; font-size:.75rem; font-weight:600; color:var(--muted); border:1px solid var(--line-strong);
+  border-radius:999px; padding:3px 10px; white-space:nowrap}
+
+.wrap{max-width:720px; margin:0 auto; padding:0 20px 128px}
+
+/* 머리말 — 포인트 텍스트(블루) */
+.hero{padding:44px 0 8px}
+.eyebrow{margin:0 0 12px; font-size:.75rem; font-weight:700; letter-spacing:.16em; color:var(--point-ink)}
+.hero h1{font-size:2.125rem; line-height:1.25; margin:0 0 12px; font-weight:700; letter-spacing:-.03em}
+.hero p.lead{margin:0; color:var(--muted); font-size:1rem; max-width:34em}
+.hero .keys{display:flex; flex-wrap:wrap; gap:16px; margin:20px 0 0; padding:0; list-style:none; font-size:.8125rem; color:var(--muted)}
+.hero .keys li{display:inline-flex; align-items:center; gap:7px}
+.dot{width:8px; height:8px; border-radius:50%; display:inline-block; flex:none}
+.dot.must{background:var(--must)} .dot.rec{background:var(--rec)} .dot.ok{background:var(--ok)}
+
+/* 단계 제목 */
+.step{display:flex; align-items:center; gap:10px; margin:44px 0 14px; font-size:1.0625rem; font-weight:700; letter-spacing:-.02em}
+.step b{display:inline-grid; place-items:center; width:24px; height:24px; border-radius:50%;
+  background:var(--sel); color:var(--sel-ink); font-size:.75rem; font-weight:700; letter-spacing:0}
+
+/* 탭: 세그먼트 */
+.tabs{display:flex; gap:4px; padding:4px; background:var(--surface); border:1px solid var(--line); border-radius:14px;
+  overflow-x:auto; scrollbar-width:none; box-shadow:var(--shadow)}
 .tabs::-webkit-scrollbar{display:none}
-.tabs button{flex:none; font:inherit; font-size:.9375rem; font-weight:500; padding:8px 16px; border-radius:999px;
-  border:1.5px solid var(--line); background:transparent; color:var(--ink); cursor:pointer}
-.tabs button[aria-selected="true"]{background:var(--sel); color:var(--sel-ink); border-color:var(--sel)}
-.legend{margin:14px 0 0; font-size:.8125rem; color:var(--muted); display:flex; gap:14px; flex-wrap:wrap}
+.tabs button{flex:1 0 auto; font:inherit; font-size:.9375rem; font-weight:600; padding:9px 16px; border-radius:10px;
+  border:0; background:transparent; color:var(--muted); cursor:pointer; white-space:nowrap; transition:background .15s, color .15s}
+.tabs button:hover{color:var(--ink); background:var(--sunk)}
+.tabs button[aria-selected="true"]{background:var(--sel); color:var(--sel-ink)}
+.legend{margin:12px 2px 0; font-size:.8125rem; color:var(--muted); display:flex; gap:14px; flex-wrap:wrap}
 .legend span{display:inline-flex; align-items:center; gap:6px}
-.pin{width:7px; height:7px; border-radius:50%; background:var(--must); display:inline-block; flex:none}
+.pin{width:6px; height:6px; border-radius:50%; background:var(--must); display:inline-block; flex:none}
 
-.picker{margin-top:14px; display:grid; gap:12px}
-.tabnote{margin:0; font-size:.875rem; color:var(--muted)}
-.group{background:var(--surface); border:1.5px solid var(--line); border-radius:12px; padding:16px}
-.group-head{display:flex; gap:14px; align-items:center}
-.photo{flex:none; object-fit:cover; border-radius:8px; background:#fff; border:1px solid var(--line)}
-.group .photo{width:72px; height:72px}
-.item .photo{width:56px; height:56px}
-.item-main{display:flex; gap:12px; align-items:flex-start; min-width:0}
-.group h2{margin:0; font-size:1.0625rem; line-height:1.4}
+/* 상품 고르기 */
+.picker{margin-top:14px; display:grid; gap:10px}
+.tabnote{margin:0 2px; font-size:.875rem; color:var(--muted)}
+.group{background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:18px 20px; box-shadow:var(--shadow)}
+.group h2{margin:0; font-size:1rem; line-height:1.4; font-weight:700; letter-spacing:-.02em}
 .group .sub{margin:2px 0 0; font-size:.8125rem; color:var(--muted)}
 .row{display:grid; grid-template-columns:7.5em 1fr; gap:6px 12px; align-items:start; margin-top:12px}
-.row-label{font-size:.875rem; color:var(--muted); padding-top:7px}
+.row + .row{padding-top:12px; border-top:1px dashed var(--line)}
+.row-label{font-size:.875rem; color:var(--muted); padding-top:8px}
 .row.solo{grid-template-columns:1fr}
 .chips{display:flex; flex-wrap:wrap; gap:6px}
-.chip{font:inherit; font-size:.9375rem; display:inline-flex; align-items:center; gap:7px; padding:6px 12px;
-  border-radius:8px; border:1.5px solid var(--line); background:var(--wall); color:var(--ink); cursor:pointer}
-.chip:hover{border-color:var(--muted)}
+.chip{font:inherit; font-size:.9375rem; font-weight:500; display:inline-flex; align-items:center; gap:7px; padding:7px 14px;
+  border-radius:10px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink); cursor:pointer;
+  transition:border-color .15s, background .15s}
+.chip:hover{border-color:var(--ink)}
 .chip[aria-pressed="true"]{background:var(--sel); color:var(--sel-ink); border-color:var(--sel)}
 .chip .n{font-size:.75rem; font-weight:700}
 
-.search label{display:block; font-weight:500; margin-bottom:6px}
-.search input{width:100%; font:inherit; font-size:1.0625rem; padding:12px 14px; border:1.5px solid var(--line);
-  border-radius:10px; background:var(--surface); color:var(--ink)}
-.search input:focus{outline:none; border-color:var(--focus)}
-.results{list-style:none; margin:8px 0 0; padding:0; background:var(--surface); border:1.5px solid var(--line); border-radius:10px}
+.search label{display:block; font-weight:600; margin-bottom:8px}
+.search input{width:100%; font:inherit; font-size:1.0625rem; padding:13px 16px; border:1px solid var(--line-strong);
+  border-radius:12px; background:var(--surface); color:var(--ink); box-shadow:var(--shadow)}
+.search input:focus{outline:none; border-color:var(--point); box-shadow:0 0 0 3px rgba(51,109,255,.18)}
+.results{list-style:none; margin:8px 0 0; padding:0; background:var(--surface); border:1px solid var(--line); border-radius:12px; overflow:hidden}
 .results[hidden]{display:none}
 .results li+li{border-top:1px solid var(--line)}
 .results button{display:flex; gap:12px; justify-content:space-between; width:100%; text-align:left; font:inherit;
-  color:inherit; background:none; border:0; padding:12px 14px; cursor:pointer}
-.results .empty{padding:14px; color:var(--muted); font-size:.9375rem}
-.add{flex:none; font-size:.8125rem; color:var(--focus); font-weight:500}
+  color:inherit; background:none; border:0; padding:13px 16px; cursor:pointer}
+.results button:hover{background:var(--sunk)}
+.results .empty{padding:14px 16px; color:var(--muted); font-size:.9375rem}
+.add{flex:none; font-size:.8125rem; color:var(--point-ink); font-weight:700}
 
-#result{scroll-margin-top:16px}
-.verdict{margin-top:40px; padding:22px; border-radius:14px; background:var(--surface); border:1.5px solid var(--line)}
-.verdict.must{background:var(--must-bg); border-color:transparent}
-.verdict.rec{background:var(--rec-bg); border-color:transparent}
-.verdict.ok{background:var(--ok-bg); border-color:transparent}
-.verdict h2{margin:0; font-size:1.375rem; line-height:1.35}
-.verdict.must h2{color:var(--must)} .verdict.rec h2{color:var(--rec)} .verdict.ok h2{color:var(--ok)}
-.verdict p{margin:6px 0 0; font-size:.9375rem}
-.cart-head{display:flex; justify-content:space-between; align-items:baseline; margin:24px 0 10px}
-.cart-head h3{margin:0; font-size:1rem}
-.clear{font:inherit; font-size:.875rem; color:var(--muted); background:none; border:0; text-decoration:underline; cursor:pointer; padding:4px}
+/* 결과 — 상태 컬러는 라인·점·연한 바탕으로만(텍스트는 블랙 유지) */
+#result{scroll-margin-top:72px}
+.verdict{position:relative; padding:24px 24px 24px 28px; border-radius:16px; background:var(--surface); border:1px solid var(--line);
+  box-shadow:var(--shadow); overflow:hidden}
+.verdict::before{content:""; position:absolute; left:0; top:0; bottom:0; width:6px; background:var(--line-strong)}
+.verdict.must::before{background:var(--must)} .verdict.rec::before{background:var(--rec)} .verdict.ok::before{background:var(--ok)}
+.verdict.must{background:linear-gradient(var(--must-bg),var(--must-bg)), var(--surface)}
+.verdict.rec{background:linear-gradient(var(--rec-bg),var(--rec-bg)), var(--surface)}
+.verdict.ok{background:linear-gradient(var(--ok-bg),var(--ok-bg)), var(--surface)}
+.verdict h2{margin:0; font-size:1.375rem; line-height:1.35; letter-spacing:-.03em; color:var(--ink)}
+.verdict p{margin:6px 0 0; font-size:.9375rem; color:var(--muted)}
+.cart-head{display:flex; justify-content:space-between; align-items:baseline; margin:28px 2px 10px}
+.cart-head h3{margin:0; font-size:.9375rem}
+.clear{font:inherit; font-size:.875rem; color:var(--muted); background:none; border:0; text-decoration:underline; text-underline-offset:3px; cursor:pointer; padding:4px}
 .cart{list-style:none; margin:0; padding:0; display:grid; gap:10px}
-.item{background:var(--surface); border:1.5px solid var(--line); border-left-width:6px; border-radius:10px; padding:14px 14px 14px 16px}
-.item.must{border-left-color:var(--must)} .item.rec{border-left-color:var(--rec)} .item.ok{border-left-color:var(--ok)}
+.item{position:relative; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px 16px 16px 20px; box-shadow:var(--shadow); overflow:hidden}
+.item::before{content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--line-strong)}
+.item.must::before{background:var(--must)} .item.rec::before{background:var(--rec)} .item.ok::before{background:var(--ok)}
 .item-top{display:flex; gap:12px; justify-content:space-between; align-items:flex-start}
-.item-name{font-weight:500; line-height:1.45}
+.item-name{font-weight:600; line-height:1.45; letter-spacing:-.02em}
 .codes{display:block; color:var(--muted); font-size:.8125rem; margin-top:2px}
-.badge{display:inline-block; font-size:.8125rem; font-weight:700; padding:2px 9px; border-radius:999px; margin-top:8px}
-.must .badge{background:var(--must-bg); color:var(--must)}
-.rec .badge{background:var(--rec-bg); color:var(--rec)}
-.ok .badge{background:var(--ok-bg); color:var(--ok)}
-.note{margin:6px 0 0; font-size:.875rem; color:var(--muted)}
-.note strong{color:var(--ink); font-weight:500}
-.qty{display:flex; align-items:center; gap:2px; flex:none}
-.qty button{width:32px; height:32px; font:inherit; font-size:1.125rem; line-height:1; border:1.5px solid var(--line);
-  background:var(--wall); color:var(--ink); border-radius:8px; cursor:pointer}
-.qty span{min-width:26px; text-align:center; font-weight:500}
+.badge{display:inline-flex; align-items:center; gap:6px; font-size:.75rem; font-weight:700; padding:3px 10px 3px 8px; border-radius:999px; margin-top:10px; color:var(--ink)}
+.badge::before{content:""; width:7px; height:7px; border-radius:50%; background:currentColor}
+.must .badge{background:var(--must-bg)} .must .badge::before{background:var(--must)}
+.rec .badge{background:var(--rec-bg)} .rec .badge::before{background:var(--rec); box-shadow:0 0 0 1px rgba(40,40,40,.12)}
+.ok .badge{background:var(--ok-bg)} .ok .badge::before{background:var(--ok)}
+.note{margin:8px 0 0; font-size:.875rem; color:var(--muted)}
+.note strong{color:var(--ink); font-weight:600}
+.qty{display:flex; align-items:center; gap:2px; flex:none; border:1px solid var(--line-strong); border-radius:10px; padding:2px}
+.qty button{width:30px; height:30px; font:inherit; font-size:1.0625rem; line-height:1; border:0;
+  background:transparent; color:var(--ink); border-radius:8px; cursor:pointer}
+.qty button:hover{background:var(--sunk)}
+.qty span{min-width:24px; text-align:center; font-weight:600; font-size:.9375rem}
 
-footer{margin-top:40px; color:var(--muted); font-size:.8125rem; line-height:1.7}
+footer{margin-top:48px; padding-top:20px; border-top:1px solid var(--line); color:var(--muted); font-size:.8125rem; line-height:1.7}
 footer p{margin:0 0 6px}
+footer .foot-brand{display:flex; align-items:center; gap:10px; margin-top:18px; color:var(--faint)}
+footer .foot-brand svg{height:11px; width:auto; display:block}
 
-.bar{position:fixed; left:0; right:0; bottom:0; z-index:20; background:var(--surface); border-top:1.5px solid var(--line);
+/* 상품 사진 (images/제품코드.jpg → 없으면 시리즈 사진 → 없으면 숨김) */
+.photo{flex:none; display:block; object-fit:cover; border-radius:10px; background:#E9E9E9; border:1px solid var(--line)}
+.group-head{display:flex; gap:16px; align-items:center}
+.group .photo{width:88px; height:88px; transition:opacity .15s}
+.item .photo{width:64px; height:64px}
+.item-main{display:flex; gap:14px; align-items:flex-start; min-width:0}
+.results .photo{width:44px; height:44px; border-radius:8px}
+.results .r-main{display:flex; gap:12px; align-items:center; min-width:0}
+.sg-label{display:flex; align-items:center; gap:10px}
+.sg-label .photo{width:40px; height:40px; border-radius:8px}
+
+/* 추천 — 블루 포인트 라인 */
+.suggest{position:relative; margin-top:12px; padding:20px 20px 18px 24px; background:var(--surface); border:1px solid var(--line);
+  border-radius:16px; box-shadow:var(--shadow); overflow:hidden}
+.suggest[hidden]{display:none}
+.suggest::before{content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--point)}
+.suggest{padding-top:0; padding-bottom:0}
+.sg-head{display:flex; align-items:center; gap:10px; width:100%; margin:0; padding:16px 0; font:inherit; color:inherit;
+  background:none; border:0; text-align:left; cursor:pointer}
+.sg-title{display:flex; align-items:center; gap:8px; flex:1; min-width:0}
+.sg-head h3{margin:0; font-size:1rem; letter-spacing:-.02em}
+.sg-count{flex:none; font-size:.8125rem; font-weight:600; color:var(--muted)}
+.sg-arrow{flex:none; width:28px; height:28px; border-radius:50%; border:1px solid var(--line-strong); display:grid; place-items:center;
+  transition:background .15s}
+.sg-arrow::before{content:""; width:7px; height:7px; border-right:2px solid var(--ink); border-bottom:2px solid var(--ink);
+  transform:translateY(-2px) rotate(45deg); transition:transform .2s}
+.suggest.open .sg-arrow::before{transform:translateY(2px) rotate(-135deg)}
+.sg-head:hover .sg-arrow{background:var(--sunk)}
+.sg-body{padding-bottom:18px}
+.sg-body[hidden]{display:none}
+.sg-body .sg-desc{margin-top:0}
+.sg-tag{font-size:.6875rem; font-weight:700; color:#fff; background:var(--d-blue); border-radius:999px; padding:2px 8px; letter-spacing:.02em}
+.sg-desc{margin:6px 0 0; font-size:.875rem; color:var(--muted)}
+.sg-list{margin-top:12px; display:grid; gap:10px}
+.sg-row{display:grid; grid-template-columns:minmax(9em,13em) 1fr; gap:6px 12px; align-items:start}
+.sg-row + .sg-row{padding-top:10px; border-top:1px dashed var(--line)}
+.sg-label{font-size:.875rem; font-weight:600; padding-top:8px}
+.sg-foot{margin:12px 0 0; font-size:.8125rem; color:var(--faint)}
+@media (max-width:480px){ .sg-row{grid-template-columns:1fr} .sg-label{padding-top:0} .suggest{padding:18px 16px 16px 20px} }
+
+/* 자주 묻는 질문 */
+#faq{scroll-margin-top:72px}
+.faq-cats{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px}
+.faq-cats button{font:inherit; font-size:.875rem; font-weight:600; padding:7px 14px; border-radius:999px; border:1px solid var(--line-strong);
+  background:var(--surface); color:var(--muted); cursor:pointer}
+.faq-cats button:hover{color:var(--ink); border-color:var(--ink)}
+.faq-cats button[aria-pressed="true"]{background:var(--sel); color:var(--sel-ink); border-color:var(--sel)}
+.faq-list{background:var(--surface); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow); overflow:hidden}
+.faq-list details + details{border-top:1px solid var(--line)}
+.faq-list summary{list-style:none; display:flex; align-items:center; gap:12px; padding:16px 20px; cursor:pointer}
+.faq-list summary::-webkit-details-marker{display:none}
+.faq-list summary:hover{background:var(--sunk)}
+.faq-q{flex:1; min-width:0}
+.faq-cat{display:block; font-size:.75rem; font-weight:600; color:var(--point-ink); margin-bottom:2px}
+.faq-q b{font-weight:600; letter-spacing:-.02em}
+.faq-list summary::after{content:""; flex:none; width:7px; height:7px; border-right:2px solid var(--muted); border-bottom:2px solid var(--muted);
+  transform:translateY(-2px) rotate(45deg); transition:transform .2s; margin-right:4px}
+.faq-list details[open] summary::after{transform:translateY(2px) rotate(-135deg)}
+.faq-a{padding:0 20px 18px; font-size:.9375rem; color:var(--muted)}
+.faq-a p{margin:0 0 8px} .faq-a p:last-child{margin-bottom:0}
+.faq-a strong{color:var(--ink); font-weight:600}
+.faq-a ul{margin:0 0 8px; padding-left:1.1em} .faq-a li{margin:2px 0}
+.faq-a dl{display:grid; grid-template-columns:auto 1fr; gap:4px 14px; margin:0 0 8px; padding:12px 14px; background:var(--sunk); border-radius:10px}
+.faq-a dt{font-weight:600; color:var(--ink)} .faq-a dd{margin:0}
+.faq-a .warn{color:var(--ink)}
+.faq-a .warn::before{content:""; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--must); margin-right:7px; vertical-align:1px}
+.faq-fig{display:block; margin:12px 0 0; max-width:480px; text-decoration:none; color:var(--faint)}
+.faq-fig img{display:block; width:100%; height:auto; border-radius:10px; border:1px solid var(--line); background:#fff}
+.faq-fig span{display:block; margin-top:6px; font-size:.75rem}
+.faq-fig:hover img{border-color:var(--line-strong)}
+.faq-note{margin:10px 2px 0; font-size:.8125rem; color:var(--faint)}
+
+/* 하단 고정 바 */
+.bar{position:fixed; left:0; right:0; bottom:0; z-index:20; background:color-mix(in srgb, var(--surface) 92%, transparent);
+  -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); border-top:1px solid var(--line);
   padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px))}
-.bar-in{max-width:640px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px}
-.bar-text{font-size:.9375rem; line-height:1.4}
-.bar-text b{display:block; font-size:1rem}
-.bar-text.must b{color:var(--must)} .bar-text.rec b{color:var(--rec)} .bar-text.ok b{color:var(--ok)}
-.bar button{flex:none; font:inherit; font-weight:700; padding:10px 18px; border-radius:10px; border:0;
+.bar-in{max-width:680px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px}
+.bar-text{font-size:.875rem; line-height:1.4; color:var(--muted)}
+.bar-text b{display:flex; align-items:center; gap:7px; font-size:1rem; color:var(--ink)}
+.bar-text.must b::before,.bar-text.rec b::before,.bar-text.ok b::before{content:""; width:8px; height:8px; border-radius:50%; flex:none}
+.bar-text.must b::before{background:var(--must)} .bar-text.rec b::before{background:var(--rec)} .bar-text.ok b::before{background:var(--ok)}
+.bar button{flex:none; font:inherit; font-weight:700; padding:11px 22px; border-radius:12px; border:0;
   background:var(--sel); color:var(--sel-ink); cursor:pointer}
-.bar button:disabled{opacity:.4; cursor:default}
+.bar button:disabled{opacity:.35; cursor:default}
 button:focus-visible{outline:2px solid var(--focus); outline-offset:2px}
+@media (prefers-reduced-motion: reduce){ *{transition:none !important} }
 @media (max-width:480px){
-  header h1{font-size:1.5rem} .wrap{padding:22px 16px 120px} .tabs{margin:20px -16px 0; padding:0 16px 2px}
+  .topbar-in{padding:0 16px; gap:10px} .brand-sub{display:none} .brand-sep{display:none}
+  .wrap{padding:0 16px 128px} .hero{padding-top:30px} .hero h1{font-size:1.75rem}
+  .step{margin-top:36px}
+  .group{padding:16px}
   .row{grid-template-columns:1fr} .row-label{padding-top:0}
+  .bar{padding-left:16px; padding-right:16px}
 }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <h1>데스커 벽고정 확인</h1>
-    <p>함께 설치할 상품을 모두 골라 담으면 벽고정이 필요한지 알려드려요. 2026년 10월 개정 기준이에요.</p>
-  </header>
+<header class="topbar">
+  <div class="topbar-in">
+    <span class="brand" role="img" aria-label="DESKER">
+      <svg viewBox="560 498 1280 204" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true"><path d="M1806.95,697.55h28.54s-56.29-77.78-56.29-77.78c28.51-4.85,47.85-26.16,47.85-57.4,0-35.72-25.29-58.46-60.65-58.46h-77.79v193.65h24.08v-76.73h38.74l55.52,76.73ZM1712.69,562.36v-37.02h50.79c22.9,0,38.62,15.21,38.62,37.02s-15.72,37.02-38.62,37.02h-50.79v-37.02Z"/> <polygon points="1391.75 503.9 1361.52 503.9 1275.93 604 1275.93 503.9 1251.85 503.9 1251.85 697.55 1275.93 697.55 1275.93 638.87 1296.9 614.42 1368.82 697.55 1398.79 697.54 1311.82 597.04 1391.75 503.9"/> <polygon points="814.3 503.9 814.3 525.36 814.3 587.77 814.3 609.23 814.3 676.09 814.3 697.55 838.41 697.55 941.15 697.55 941.15 676.09 838.41 676.09 838.41 609.23 939.11 609.23 939.11 587.77 838.41 587.77 838.41 525.36 941.15 525.36 941.15 503.9 838.41 503.9 814.3 503.9"/> <polygon points="1467.41 503.9 1467.41 525.36 1467.41 587.77 1467.41 609.23 1467.41 676.09 1467.41 697.55 1491.53 697.55 1594.27 697.55 1594.27 676.09 1491.53 676.09 1491.53 609.23 1592.22 609.23 1592.22 587.77 1491.53 587.77 1491.53 525.36 1594.27 525.36 1594.27 503.9 1491.53 503.9 1467.41 503.9"/> <path d="M630.64,503.9h-66.13v193.65h66.13c60.14,0,99.29-41.55,99.29-96.71s-39.16-96.93-99.29-96.93ZM704.99,600.84c0,41.52-27.27,75.21-74.35,75.21h-42.08v-150.69h42.08c47.98,0,74.35,33.67,74.35,75.47h0Z"/> <path d="M1052.09,553.22c0-18.28,16.54-30.76,39.77-30.76,21.17,0,41.52,7.25,55.98,23.19l14.58-17.66c-16.26-17.17-39.2-27.03-68.81-27.03-38.09,0-66.49,21.82-66.49,53.7,0,69.11,114.68,41.53,114.68,91.43,0,14.87-11.05,33.41-45.62,33.41-23.32-.07-45.5-10.09-60.95-27.55l-14.22,18.24h0c15.98,18.02,40.66,30.76,74.33,30.76,52.26,0,71.43-28.72,71.43-56.85,0-72.31-114.69-47.33-114.69-90.9Z"/></svg>
+    </span>
+    <span class="brand-sep" aria-hidden="true"></span>
+    <span class="brand-sub">벽고정 확인</span>
+    <span class="std">2026.10 개정 기준</span>
+  </div>
+</header>
 
+<div class="wrap">
+  <section class="hero">
+    <p class="eyebrow">DESKER 학생방 설치 가이드</p>
+    <h1>벽고정, 필요할까요?</h1>
+    <p class="lead">함께 설치할 상품을 모두 골라 담으면, 상품마다 벽고정이 필요한지 바로 알려드려요.</p>
+    <ul class="keys" aria-label="결과 표시"><li><i class="dot must"></i>벽고정 필수</li><li><i class="dot rec"></i>연결 설치 시 권장</li><li><i class="dot ok"></i>벽고정 필수 아님</li></ul>
+  </section>
+
+  <h2 class="step"><b>1</b>상품 고르기</h2>
   <nav class="tabs" role="tablist" id="tabs"></nav>
   <div class="legend"><span><i class="pin"></i>단독 설치 시 벽고정 필수</span></div>
   <div class="picker" id="picker"></div>
 
   <section id="result">
+    <h2 class="step"><b>2</b>결과 확인</h2>
     <div class="verdict" id="verdict" aria-live="polite"></div>
+    <div class="suggest" id="suggest" hidden></div>
     <div class="cart-head" id="cartHead" hidden>
       <h3>담은 상품</h3>
       <button class="clear" id="clear" type="button">모두 비우기</button>
@@ -145,9 +288,17 @@ button:focus-visible{outline:2px solid var(--focus); outline-offset:2px}
     <ul class="cart" id="cart"></ul>
   </section>
 
+  <section id="faq" aria-labelledby="faqTitle">
+    <h2 class="step" id="faqTitle"><b>?</b>자주 묻는 질문</h2>
+    <div class="faq-cats" id="faqCats" role="group" aria-label="질문 분류"></div>
+    <div class="faq-list" id="faqList"></div>
+    <p class="faq-note">공식 안내가 아닌 참고용 안내예요. 자세한 내용은 상품 상세 페이지나 데스커 챗봇에서 확인해 주세요.</p>
+  </section>
+
   <footer>
     <p>참고용 안내예요. 실제 설치 가능 여부는 벽 상태와 설치 환경에 따라 달라질 수 있으니 시공 전 꼭 다시 확인해 주세요.</p>
     <p>“연결 설치 시 권장”은 함께 담은 상품을 서로 붙여 연결해서 설치할 때만 해당돼요. 따로 떨어뜨려 설치하면 벽고정 필수예요.</p>
+    <div class="foot-brand" aria-hidden="true"><svg viewBox="560 498 1280 204" xmlns="http://www.w3.org/2000/svg" fill="currentColor" aria-hidden="true"><path d="M1806.95,697.55h28.54s-56.29-77.78-56.29-77.78c28.51-4.85,47.85-26.16,47.85-57.4,0-35.72-25.29-58.46-60.65-58.46h-77.79v193.65h24.08v-76.73h38.74l55.52,76.73ZM1712.69,562.36v-37.02h50.79c22.9,0,38.62,15.21,38.62,37.02s-15.72,37.02-38.62,37.02h-50.79v-37.02Z"/> <polygon points="1391.75 503.9 1361.52 503.9 1275.93 604 1275.93 503.9 1251.85 503.9 1251.85 697.55 1275.93 697.55 1275.93 638.87 1296.9 614.42 1368.82 697.55 1398.79 697.54 1311.82 597.04 1391.75 503.9"/> <polygon points="814.3 503.9 814.3 525.36 814.3 587.77 814.3 609.23 814.3 676.09 814.3 697.55 838.41 697.55 941.15 697.55 941.15 676.09 838.41 676.09 838.41 609.23 939.11 609.23 939.11 587.77 838.41 587.77 838.41 525.36 941.15 525.36 941.15 503.9 838.41 503.9 814.3 503.9"/> <polygon points="1467.41 503.9 1467.41 525.36 1467.41 587.77 1467.41 609.23 1467.41 676.09 1467.41 697.55 1491.53 697.55 1594.27 697.55 1594.27 676.09 1491.53 676.09 1491.53 609.23 1592.22 609.23 1592.22 587.77 1491.53 587.77 1491.53 525.36 1594.27 525.36 1594.27 503.9 1491.53 503.9 1467.41 503.9"/> <path d="M630.64,503.9h-66.13v193.65h66.13c60.14,0,99.29-41.55,99.29-96.71s-39.16-96.93-99.29-96.93ZM704.99,600.84c0,41.52-27.27,75.21-74.35,75.21h-42.08v-150.69h42.08c47.98,0,74.35,33.67,74.35,75.47h0Z"/> <path d="M1052.09,553.22c0-18.28,16.54-30.76,39.77-30.76,21.17,0,41.52,7.25,55.98,23.19l14.58-17.66c-16.26-17.17-39.2-27.03-68.81-27.03-38.09,0-66.49,21.82-66.49,53.7,0,69.11,114.68,41.53,114.68,91.43,0,14.87-11.05,33.41-45.62,33.41-23.32-.07-45.5-10.09-60.95-27.55l-14.22,18.24h0c15.98,18.02,40.66,30.76,74.33,30.76,52.26,0,71.43-28.72,71.43-56.85,0-72.31-114.69-47.33-114.69-90.9Z"/></svg></div>
   </footer>
 </div>
 
@@ -400,10 +551,18 @@ function renderPicker(){
     if (g.sub) titles.append(el('p','sub',g.sub));
     const ph = photo([g.img]); if (ph) head.append(ph);
     head.append(titles); card.append(head);
+    // 상품 버튼에 마우스를 올리면(또는 포커스) 대표 사진이 그 상품 사진으로 바뀐다
+    const show = id => { if (ph && ph.isConnected) ph.src = 'images/' + (id == null ? g.img : PRODUCTS[id].model) + '.jpg'; };
     g.rows.forEach(([label, ids]) => {
       const row = el('div', 'row' + (label ? '' : ' solo'));
       if (label) row.append(el('div','row-label',label));
-      const chips = el('div','chips'); ids.forEach(id => chips.append(chip(id)));
+      const chips = el('div','chips');
+      ids.forEach(id => {
+        const c = chip(id);
+        c.addEventListener('mouseenter', () => show(id)); c.addEventListener('focus', () => show(id));
+        c.addEventListener('mouseleave', () => show(null)); c.addEventListener('blur', () => show(null));
+        chips.append(c);
+      });
       row.append(chips); card.append(row);
     });
     box.append(card);
@@ -429,7 +588,10 @@ function renderSearch(box){
       const li = el('li'), b = el('button'); b.type = 'button';
       const left = el('span');
       left.append(el('span','item-name',p.name), el('span','codes', codeLine(p) + (p.required ? ', 단독 설치 시 벽고정 필수' : ', 벽고정 필수 아님')));
-      b.append(left, el('span','add', qtyOf(p.id) ? '하나 더 담기' : '담기'));
+      const rm = el('span','r-main'), rph = photo([p.model, p.series]);
+      if (rph) rm.append(rph);
+      rm.append(left);
+      b.append(rm, el('span','add', qtyOf(p.id) ? '하나 더 담기' : '담기'));
       b.addEventListener('click', () => { addOne(p.id); draw(); });
       li.append(b); list.append(li);
     });
@@ -457,7 +619,69 @@ function summary(){
   return {res, must:res.filter(x => x.r.status==='must').length, rec:res.filter(x => x.r.status==='rec').length};
 }
 
+// 벽고정 필수 상품이 있을 때: 하나만 더 연결하면 필수가 권장으로 바뀌는 상품을 찾는다.
+// 실제 판정 규칙(evaluate)으로 상품을 하나씩 가상으로 더 담아 계산하므로 규칙이 바뀌어도 그대로 맞는다.
+function findSuggestions(){
+  const saved = cart;
+  const mustIds = saved.filter(c => evaluate(c).status === 'must').map(c => c.id);
+  if (!mustIds.length) return null;
+  const hits = [];
+  PRODUCTS.forEach(p => {
+    if (p.hidden || saved.some(c => c.id === p.id)) return;
+    cart = saved.concat([{id:p.id, qty:1}]);
+    const self = evaluate(cart[cart.length - 1]).status;
+    const fixed = mustIds.filter(id => evaluate(cart.find(c => c.id === id)).status !== 'must').length;
+    if (fixed && self !== 'must') hits.push({id:p.id, fixed});
+  });
+  cart = saved;
+  if (!hits.length) return {mustCount:mustIds.length, best:0, ids:new Set()};
+  const best = Math.max(...hits.map(h => h.fixed));
+  return {mustCount:mustIds.length, best, ids:new Set(hits.filter(h => h.fixed === best).map(h => h.id))};
+}
+
+let suggestOpen = false;   // 추천 상자는 기본으로 접어 둔다(화살표를 눌러야 펼침)
+function renderSuggest(){
+  const box = $('#suggest'); box.innerHTML = '';
+  const s = cart.length ? findSuggestions() : null;
+  if (!s) { box.hidden = true; return; }
+  box.hidden = false;
+  box.classList.toggle('open', suggestOpen);
+  const head = el('button','sg-head'); head.type = 'button';
+  head.setAttribute('aria-expanded', String(suggestOpen)); head.setAttribute('aria-controls', 'sgBody');
+  const title = el('span','sg-title');
+  title.append(el('span','sg-tag','추천'), el('h3', null, '함께 연결하면 벽고정이 권장으로 바뀌어요'));
+  head.append(title);
+  if (s.best) head.append(el('span','sg-count', s.ids.size + '개'));
+  head.append(el('span','sg-arrow'));
+  head.addEventListener('click', () => { suggestOpen = !suggestOpen; renderSuggest(); });
+  box.append(head);
+  const body = el('div','sg-body'); body.id = 'sgBody'; body.hidden = !suggestOpen;
+  box.append(body);
+  if (!s.best) {
+    body.append(el('p','sg-desc','지금 담은 상품은 어떤 상품을 함께 연결해도 벽고정이 필수예요.'));
+    return;
+  }
+  body.append(el('p','sg-desc', s.best === s.mustCount
+    ? (s.mustCount > 1 ? `아래 상품 중 하나를 붙여서 연결 설치하면 필수 상품 ${s.mustCount}개가 모두 권장으로 바뀌어요.` : '아래 상품 중 하나를 붙여서 연결 설치하면 권장으로 바뀌어요.')
+    : `아래 상품 중 하나를 붙여서 연결 설치하면 필수 상품 ${s.mustCount}개 중 ${s.best}개가 권장으로 바뀌어요.`));
+  const list = el('div','sg-list');
+  CATALOG.filter(c => c.groups).forEach(cat => cat.groups.forEach(g => g.rows.forEach(([label, ids]) => {
+    const pick = ids.filter(id => s.ids.has(id));
+    if (!pick.length) return;
+    const row = el('div','sg-row');
+    const lab = el('div','sg-label'), sph = photo([PRODUCTS[pick[0]].model, g.img]);
+    if (sph) lab.append(sph);
+    lab.append(el('span', null, g.t + (label ? ' · ' + label : '')));
+    row.append(lab);
+    const chips = el('div','chips'); pick.forEach(id => chips.append(chip(id)));
+    row.append(chips); list.append(row);
+  })));
+  body.append(list);
+  body.append(el('p','sg-foot','누르면 바로 담겨요. 담은 뒤 아래에서 결과를 다시 확인해 주세요.'));
+}
+
 function renderResult(){
+  renderSuggest();
   const v = $('#verdict'), list = $('#cart');
   list.innerHTML = ''; v.className = 'verdict'; v.innerHTML = '';
   $('#cartHead').hidden = !cart.length;
@@ -519,6 +743,71 @@ function renderBar(){
 function renderAll(){ renderPicker(); renderResult(); renderBar(); }
 $('#barBtn').addEventListener('click', () => $('#result').scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}));
 $('#clear').addEventListener('click', () => { cart = []; save(); renderAll(); });
+// 자주 묻는 질문 — 설치 공간·벽고정·상품 (출처: 데스커 신학기 위크 안내 페이지 FAQ, 참고용)
+// 설명 그림은 images/faq/ 에 있다. 누르면 새 창에서 크게 볼 수 있다.
+const faqImg = (file, alt) => `<a class="faq-fig" href="images/faq/${file}" target="_blank" rel="noopener"><img src="images/faq/${file}" alt="${alt}" loading="lazy"><span>누르면 크게 볼 수 있어요</span></a>`;
+const FAQ = [
+  {c:'설치 공간', q:'천장 높이는 얼마나 필요한가요?', a:`
+    <p>제품 높이의 <strong>1.1배 이상</strong>이 필요해요. 6단(2,078mm)은 최소 2,280mm 이상이 필요하고, 실측 오차를 생각해 <strong>천고 2.3m 이상일 때 6단</strong>을 권장드려요. 천고가 낮다면 5단이 안전해요.</p>
+    <p class="warn">현장에서 천고 때문에 설치가 어려우면 반품되며, 반품비가 부과될 수 있어요. 6단에서 5단으로 교환은 어려워 새로 주문하셔야 해요.</p>
+    ${faqImg('faq-ceiling-v2.webp', '6단 책상세트 높이 2.07m, 설치 공간 천장 높이 2.3m 이상')}`},
+  {c:'설치 공간', q:'옆 공간은 얼마나 필요한가요?', a:`
+    <p><strong>제품 너비 + 50cm 이상</strong>의 여유 공간이 필요해요. 책상을 두 개 붙이실 경우 전체 길이 + 50cm를 확인해 주세요.</p>
+    ${faqImg('faq-space-v2.webp', '설치공간 확보: 높이·앞쪽은 제품 높이의 1.1배 이상(최소 2280mm), 옆쪽은 제품 너비 + 50cm 이상')}`},
+  {c:'설치 공간', q:'설치가 안 되는 경우가 있나요?', a:`
+    <p>다른 공간에서 조립한 뒤 옮겨 설치하는 것은 어려워요. 침대, 실링팬 등 간섭 요소가 있는 경우에도 설치가 어려울 수 있어요.</p>`},
+  {c:'설치 공간', q:'멀티탭을 준비해야 하나요?', a:`
+    <p>LED 조명과 빌트인 멀티탭에 전원을 연결할 콘센트가 필요해요. <strong>5구 이상 멀티탭</strong>을 미리 준비해 주시면 좋아요(모션 세트는 6구 이상 권장). 빌트인 멀티탭 코드 길이는 2m예요.</p>
+    <p>시공 시 멀티탭이 없으면 배선 정리가 어렵고, 설치 이후에는 AS로 진행하셔야 해요.</p>`},
+  {c:'설치 공간', q:'사다리차 같은 추가 비용이 발생할 수 있나요?', a:`
+    <p>설치 현장 상황에 따라 사다리차 비용, 엘리베이터 사용료 등 추가 비용이 발생할 수 있으며, 이 비용은 고객님 부담이에요. 사다리차(또는 지게차) 비용이 청구되는 경우:</p>
+    <ul><li>3층 이상인데 엘리베이터가 없는 경우</li><li>층수와 관계없이 중량물(모션데스크 등)을 계단으로 반입할 수 없는 경우</li><li>8인 이상 탑승 가능한 엘리베이터가 없거나 계단이 좁아 가구 반입이 불가능한 경우</li></ul>
+    <p>사다리차를 쓰지 않고 기사님과 함께 가구를 옮기는 것은 불가해요.</p>`},
+  {c:'벽고정', q:'벽고정은 어떻게 하고, 벽에 구멍이 남나요?', a:`
+    <p>L자 철물로 책장 맨 윗면과 벽에 피스를 하나씩 고정해요. 눈에 띄지 않는 위치에 작게 고정해 드리지만, <strong>피스 흔적은 남을 수 있어요.</strong></p>
+    ${faqImg('wall-bracket-2.png', '벽고정 철물 설치 방식: 철제선반장 외, 철제선반장')}`},
+  {c:'벽고정', q:'어떤 벽에 벽고정을 할 수 있나요?', a:`
+    <dl><dt>시공 가능</dt><dd>콘크리트, 석고벽</dd><dt>시공 불가능</dt><dd>대리석, 가벽 등</dd></dl>
+    <p>안내된 벽체 외에는 벽고정이 불가능하니, 구매 전 시공 가능한 벽면인지 확인해 주세요. 설치·시공 공간은 미리 비워 주시고, 다른 가구와 연결(커넥팅)하는 경우 그 가구를 시공 위치로 미리 옮겨 주셔야 해요.</p>`},
+  {c:'벽고정', q:'벽고정이 불가한 현장이거나 벽고정을 거부하면 어떻게 되나요?', a:`
+    <p class="warn">벽고정이 불가한 현장이거나 벽고정을 거부하시면 <strong>유상 반품</strong>돼요.</p>`},
+  {c:'벽고정', q:'설치한 뒤에 위치를 옮길 수 있나요?', a:`
+    <p>설치 후 제품 위치를 바꾸시려면 벽고정 시공 서비스를 별도로 신청하셔야 해요.</p>`},
+  {c:'벽고정', q:'붙여서 설치한 책장을 나중에 떼어 옮길 수 있나요?', a:`
+    <p>책상세트와 600폭 책장은 측면 커넥팅 홀로 체결되어 있어요. 옮기시려면 체결을 풀어야 해서 고객센터를 통해 진행하시길 권장드려요. 직접 진행하시는 건 권장하지 않아요.</p>`},
+  {c:'상품', q:'책상세트와 멀티책상세트는 뭐가 다른가요?', a:`
+    <p><strong>멀티책상세트</strong>는 전면에 펠트 자석 패널이 있어 전면까지 활용할 수 있고, 전면 책장 앞 선반과 트레이, 가운데 매립 콘센트가 더해져 있어요. <strong>일반(콘센트형) 책상세트</strong>는 군더더기 없는 깔끔한 디자인이 특징이에요.</p>`},
+  {c:'상품', q:'600폭 책장은 어떻게 고르나요?', a:`
+    <p>하부 디자인은 3가지이고, 도어 유무에 따라 오픈형·도어형으로 나뉘어요.</p>
+    <dl><dt>기본형</dt><dd>책상장과 깊이가 같아 깔끔하게 연출돼요</dd><dt>깊은수납형</dt><dd>가방·부피 큰 물건 수납에 좋아요</dd><dt>서랍형</dt><dd>속옷·작은 용품 수납에 좋아요</dd></dl>
+    <p>도어는 취향에 맞게 고르시면 되고, 깔끔한 수납을 원하시면 도어형을 추천드려요.</p>`},
+  {c:'상품', q:'5단과 6단은 어떻게 고르나요?', a:`
+    <p>수납은 6단이 넉넉해요. 다만 <strong>천고 2.3m 이상</strong>이어야 안전하게 설치할 수 있어요. 천고가 낮거나 확실하지 않으시면 5단을 권장드려요.</p>`},
+  {c:'상품', q:'1400폭과 1600폭은 어떻게 고르나요?', a:`
+    <p>7세 전후에는 1400폭으로도 충분해요. 방 가로 공간이 넉넉하고 부모님과 나란히 앉아 사용하실 거라면 1600폭이 좋아요.</p>`},
+  {c:'상품', q:'모션데스크는 AS가 되나요?', a:`
+    <p>작동부는 <strong>5년 무상 AS</strong>를 제공해 드려요.</p>`}
+];
+let faqCat = '전체';
+function renderFaq(){
+  const cats = ['전체', ...new Set(FAQ.map(f => f.c))];
+  const bar = $('#faqCats'); bar.innerHTML = '';
+  cats.forEach(c => {
+    const b = el('button', null, c); b.type = 'button'; b.setAttribute('aria-pressed', String(c === faqCat));
+    b.addEventListener('click', () => { faqCat = c; renderFaq(); });
+    bar.append(b);
+  });
+  const list = $('#faqList'); list.innerHTML = '';
+  FAQ.filter(f => faqCat === '전체' || f.c === faqCat).forEach(f => {
+    const d = el('details'), s = el('summary'), q = el('span','faq-q');
+    q.append(el('span','faq-cat', f.c), el('b', null, f.q));
+    s.append(q); d.append(s);
+    const a = el('div','faq-a'); a.innerHTML = f.a;   // 고정 문구(이 파일에 직접 쓴 내용)만 넣는다
+    d.append(a); list.append(d);
+  });
+}
+renderFaq();
+
 renderTabs(); renderAll();
 </script>
 </body>
