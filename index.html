@@ -196,6 +196,21 @@ footer .foot-brand svg{height:11px; width:auto; display:block}
 .sg-foot{margin:12px 0 0; font-size:.8125rem; color:var(--faint)}
 @media (max-width:480px){ .sg-row{grid-template-columns:1fr} .sg-label{padding-top:0} .suggest{padding:18px 16px 16px 20px} }
 
+/* CJ온스타일 상품 링크 */
+.buy-links{display:inline-flex; align-items:center; gap:4px; flex:none; font-size:.75rem; white-space:nowrap}
+.buy-links::before{content:"구매하러 가기"; color:var(--faint); margin-right:4px}
+.buy-links .buy-link + .buy-link::before{content:"·"; color:var(--faint); margin-right:4px}
+.buy-link{display:inline-flex; align-items:center; gap:3px; flex:none; font-size:.75rem; font-weight:600; color:var(--point-ink);
+  text-decoration:none; white-space:nowrap}
+.buy-link::after{content:"↗"; font-size:.75rem}
+.buy-link:hover{text-decoration:underline; text-underline-offset:3px}
+.tag-row{display:flex; align-items:center; flex-wrap:wrap; gap:6px 12px; margin-top:10px}
+.tag-row .badge{margin-top:0}
+.results .r-row{display:flex; align-items:center}
+.results .r-row > button{flex:1; min-width:0}
+.results .r-row > .buy-links{padding:0 16px 0 4px}
+@media (max-width:480px){ .results .r-row{flex-wrap:wrap} .results .r-row > .buy-links{padding:0 16px 12px 72px; margin-top:-6px} }
+
 /* 맨 위 벽고정 안내 */
 .notice{margin:4px 0 16px; background:var(--surface); border:1px solid var(--line); border-radius:12px;
   font-size:.75rem; line-height:1.55; color:var(--muted)}
@@ -548,6 +563,18 @@ let tab = 'desk';
 const $ = s => document.querySelector(s);
 const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
 const codeLine = p => p.model ? '제품코드 ' + p.model : '제품코드 없음';
+// 구매처 링크(새 창). 사용자가 어디로 갈지 고른다.
+//  - CJ온스타일: 상품마다 저장된 CJ몰 번호로 그 상품 페이지
+function buyLinks(p){
+  const wrap = el('span','buy-links');
+  const add = (label, href) => {
+    const a = el('a','buy-link', label); a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    a.setAttribute('aria-label', p.name + ' ' + label + '에서 보기(새 창)');
+    wrap.append(a);
+  };
+  if (p.cj) add('CJ온스타일', 'https://display.cjonstyle.com/p/item/' + encodeURIComponent(p.cj));
+  return wrap;
+}
 const qtyOf = id => (cart.find(c => c.id === id) || {}).qty || 0;
 
 // 두 상품끼리 직접 따져 본 결과
@@ -649,7 +676,8 @@ function renderSearch(box){
       rm.append(left);
       b.append(rm, el('span','add', qtyOf(p.id) ? '하나 더 담기' : '담기'));
       b.addEventListener('click', () => { addOne(p.id); draw(); });
-      li.append(b); list.append(li);
+      const lk = buyLinks(p);
+      li.className = 'r-row'; li.append(b); if (lk) li.append(lk); list.append(li);
     });
   };
   input.addEventListener('input', () => { query = input.value; draw(); });
@@ -760,7 +788,10 @@ function renderResult(){
     const li = el('li', 'item ' + r.status);
     const top = el('div','item-top'), info = el('div');
     info.append(el('div','item-name',p.name), el('span','codes',codeLine(p)));
-    info.append(el('span','badge',{must:'벽고정 필수', rec:'연결 설치 시 권장', ok:'벽고정 필수 아님'}[r.status]));
+    const tagRow = el('div','tag-row'), lk = buyLinks(p);
+    tagRow.append(el('span','badge',{must:'벽고정 필수', rec:'연결 설치 시 권장', ok:'벽고정 필수 아님'}[r.status]));
+    if (lk) tagRow.append(lk);
+    info.append(tagRow);
     if (r.status === 'rec') {
       const names = [...new Set(r.partners.map(x => x.id === c.id ? '같은 상품 1개 더' : PRODUCTS[x.id].name))];
       const n = el('p','note');
