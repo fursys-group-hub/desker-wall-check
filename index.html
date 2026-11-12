@@ -593,9 +593,12 @@ function evaluateDirect(entry){
   return partners.length ? {status:'rec', partners} : {status:'must'};
 }
 // 담은 상품 중 어떤 두 상품이 이미 권장 조합이면, 거기에 함께 연결하는 나머지 상품도 권장
+// 단, 모션 책상세트(B)와 목제 도어형 책장(F)은 옆에 붙는 상품 종류가 정해져 있어(모션은 깊은수납·서랍·거울형 책장 또는 옷장)
+// 다른 조합에 끼워 넣는다고 권장이 되지 않는다. 예: 모션 + 일반 책상세트 + 목제 오픈형 책장 → 모션은 여전히 필수.
+const NO_CHAIN = ['B','F'];
 function evaluate(entry){
   const r = evaluateDirect(entry);
-  if (r.status !== 'must') return r;
+  if (r.status !== 'must' || NO_CHAIN.includes(PRODUCTS[entry.id].rule)) return r;
   const anchors = new Map();
   cart.forEach(c => {
     const d = evaluateDirect(c);
